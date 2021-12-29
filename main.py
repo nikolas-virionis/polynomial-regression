@@ -36,7 +36,7 @@ def equation(coefficients):
     return equation
 
 
-def polynomial(x, y):
+def polynomial(x, y, control=True):
     x = np.array(x)
     y = np.array(y)
     r2 = 0
@@ -50,7 +50,7 @@ def polynomial(x, y):
         if r2_score(y, prediction(x)) - i >= 0.9:
             return list_return(r2_score(y, prediction(x)), i, coefficients, prediction)
 
-        if r2 < r2_score(y, prediction(x)) - i / 30:
+        if r2 < r2_score(y, prediction(x)) - (i / 30 if control else 0):
             r2 = r2_score(y, prediction(x))
             degree = i
             predict = prediction
@@ -59,11 +59,15 @@ def polynomial(x, y):
     return list_return(r2, degree, coefficient, predict)
 
 
-r2, degree, ordinal, coefficients, predict = polynomial(x, y)
-print(
-    f"\nThe best polynomial to describe the given sets' behaviour is the {str(degree) + ordinal} degree polynomial\n It has a coefficient of determination of {r2}\n The equation can be written as {equation(coefficients)}\n and makes predictions via the predict function\n")
+regression = polynomial(x, y)
+r2, degree, ordinal, coefficients, predict = regression if regression[1] else polynomial(
+    x, y, False)
+if r2 > 0.1:
+    print(f"\nThe best polynomial to describe the given sets' behaviour is the {str(degree) + ordinal} degree polynomial\n It has a coefficient of determination of {r2}\n{f' This index being low, represents it is not possible to find any reliably predictable behaviour given the previous datasets, therefore the actual accuracy for the predictions will be low and highly dependent on chance' if r2 < 0.45 else f''' This index represents the predictions will not have optimal accuracy when making predictions since the given datasets don't set up a good predictable behaviour''' if r2 < 0.6 else ''}\n The equation can be written as {equation(coefficients)}\n and makes predictions via the predict function\n")
 
-xp = np.linspace(0, 7, 100)
-plt.scatter(x, y)
-plt.plot(xp, predict(xp), c='r')
-plt.show()
+    xp = np.linspace(min(x), max(x))
+    plt.scatter(x, y)
+    plt.plot(xp, predict(xp), c='r')
+    plt.show()
+else:
+    print("The given datasets cannot correlate to each other in a predictable way what so ever, having that said any prediction, based on this past data, would be a blind guess, therefore no equation could be made")
