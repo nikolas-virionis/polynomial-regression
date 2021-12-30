@@ -98,19 +98,19 @@ class Regression:
         x = self.__x
         y = self.__y
         for i in range(1, 31):
-            try:
-                coefficients = np.polyfit(x, y, i)
-                prediction = np.poly1d(coefficients)
-            finally:
-                if r2_score(y, prediction(x)) - i >= 0.9:
-                    self.__set_list_return(r2_score(y, prediction(x)),
-                                           i, coefficients, prediction)
 
-                if r2 < r2_score(y, prediction(x)) - (i / 30 if control else 0):
-                    r2 = r2_score(y, prediction(x))
-                    degree = i
-                    predict = prediction
-                    coefficient = coefficients
+            coefficients = np.polyfit(x, y, i)
+            prediction = np.poly1d(coefficients)
+
+            if r2_score(y, prediction(x)) - i >= 0.9:
+                self.__set_list_return(r2_score(y, prediction(x)),
+                                       i, coefficients, prediction)
+
+            if r2 < r2_score(y, prediction(x)) - (i / 30 if control else 0):
+                r2 = r2_score(y, prediction(x))
+                degree = i
+                predict = prediction
+                coefficient = coefficients
 
         self.__set_list_return(r2, degree, coefficient, predict)
 
@@ -132,7 +132,7 @@ class Regression:
 
     def equation_text(self) -> str:
         """Returns the polinomial equation formatted as a string"""
-        return "\n " + f"The equation can be written as {self.equation_string()}" + "\n and makes predictions via the predict function\n"
+        return "\n " + f"The equation can be written as {self.equation_string()}" + "\n and makes predictions via the get_prediction function\n"
 
     def full_text_analysis(self) -> str:
         """Returns the full text analysis"""
