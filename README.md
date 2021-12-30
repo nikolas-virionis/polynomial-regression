@@ -32,14 +32,14 @@ It is important to notice that either way its necessary to pass two same sized l
 The first way is to import the Class Regression used for all the background processing itself, <br>
 and instantiate it like in the example below:
  ~~~ python
- from polinomial_regression import Regression
+ from polinomial_regression.regression import Regression
  regression = Regression([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
  ~~~
  
 Or else, alternatively, its possible to use a function which returns the instance of the Class<br> 
 like in the example below:
  ~~~ python
- from polinomial_regression import regress
+ from polinomial_regression.regression import regress
  regression = regress([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
  ~~~
 Again, which one to choose is totally up to you, and it doesn't change any results what so ever, <br>
