@@ -137,13 +137,13 @@ regression.full_text_analysis()
 ~~~~~~
  - full_analysis
 ~~~python
-regression.full_text_analysis()
+regression.full_analysis()
 # returns the full text analysis after plotting the
 # visualization plots
 ~~~
  - print_full_analysis
 ~~~python
-regression.full_text_analysis()
+regression.print_full_analysis()
 # prints the full text analysis and plots the
 # visualization charts
 ~~~
