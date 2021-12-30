@@ -69,7 +69,8 @@ regression.get_full_degree()
 ~~~python
 regression.get_coefficients()
 # returns a list of all the coefficients of the polynomial equation
-# E.g. [2, 3, 4, 5, 6] in case of the equation being y = 2x^4 + 3x³ + 4x² + 5x + 6
+# E.g. [2, 3, 4, 5, 6] in case of the equation being 
+# y = 2x^4 + 3x³ + 4x² + 5x + 6
 ~~~
  - get_r2
 ~~~python
