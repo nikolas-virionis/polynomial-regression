@@ -25,26 +25,27 @@ For Linux
 ~~~bash
 pip3 install polynomial-regression-model
 ~~~
-  - Importing the package and getting the Class instance<br>
+  - Importing the package<br>
 
-Firstly, there are two ways to import and use the package properly, though the difference is negligible:<br>
-It is important to notice that either way its necessary to pass two same sized lists,
-The first way is to import the Class Regression used for all the background processing itself, <br>
-and instantiate it like in the example below:
- ~~~ python
- from polinomial_regression.main import Regression
- regression = Regression([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
- ~~~
- 
-Or else, alternatively, its possible to use a function which returns the instance of the Class<br> 
-like in the example below:
+Firstly, it's necessary to import the method regress from the package polinomial_regression.main. It will analyse the parameter(s) and return the right object with all the methods it provides:
  ~~~ python
  from polinomial_regression.main import regress
+ ~~~
+ 
+ Then, there are two ways of using this model: One which provides both the axis values, x and y, and the math is done, and the other which provides only the y axis, would be more fitting to a use case of overtime monitoring of a single metric, sleect the best option to use below:
+
+ First the one that relates two different metrics, it is necessary to pass two same sized lists of numbers
+ ~~~ python
  regression = regress([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
  ~~~
-Again, which one to choose is totally up to you, and it doesn't change any results what so ever, <br>
-it's down to personal preference
 
+ And also the one that monitors the overtime behaviour of a single metric, it is necessary to pass a number list
+ ~~~ python
+ regression = regress([1, 2, 3, 4, 5, 2, 4, 6, 8, 10])
+ ~~~
+
+ 
+ After we already got our object instance, all there is left to do is enjoy the beauty of math
 ## Methods
  - get_degree
 ~~~python

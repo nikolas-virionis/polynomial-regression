@@ -149,6 +149,16 @@ class Regression:
         self.visualization()
 
 
-def regress(x, y):
+def regress(x: list[number], y: list[number]):
     """Returns an instance of the Regression Class"""
     return Regression(x, y)
+
+def regress(y: list[number]):
+    """Returns an instance of the Regression Class"""
+    x = list(range(1, len(y) + 1))
+    print(x)
+    return Regression(x, y)
+
+
+regression = regress([1, 2, 3, 4, 5, 7])
+regression.print_full_analysis()
