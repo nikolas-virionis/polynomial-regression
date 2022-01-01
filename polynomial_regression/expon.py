@@ -4,18 +4,18 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def function(x, a, b, c):
-    return a * (b ** x) + c
+def function(x, a, b):
+    """Function that represents the exponential equation"""
+    return a * (b ** x)
 
 
 def regression(x, y):
-    try:
-        popt, pcov = curve_fit(function, x, y, p0=[1, 1e-6, 1])
-    except Exception:
-        return [0, 0, 0]
+    """Function that returns the regression equation coefficients"""
+    popt, pcov = curve_fit(function, x, y, p0=[1, 0], maxfev=99999999)
     return popt
 
 
 def prediction(X, Y, x):
-    a, b, c = regression(X, Y)
-    return function(x, a, b, c)
+    """Function that returns the prediction made with the regressipon equation"""
+    a, b = regression(X, Y)
+    return function(x, a, b)
