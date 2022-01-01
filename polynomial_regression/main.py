@@ -1,6 +1,7 @@
 import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
+import expon
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -62,22 +63,26 @@ class Regression:
         equation = "y = "
         equationX = ""
         coefficients = self.__list_return[3]
-        for i in range(len(coefficients) - 1, -1, -1):
-            if round(coefficients[len(coefficients) - (i + 1)], 4) == 0:
-                continue
-            equationX += f"{'+' if coefficients[len(coefficients) - (i + 1)] > 0 else '-'} {str(abs(round(coefficients[len(coefficients) - (i + 1)], 4))) + (f'x^{i}' if i > 1 else 'x' if i > 0 else '')} "
-
-        equationX = equationX[2:]
+        print(self.__list_return)
+        if self.__list_return[5] == "polynomial":
+            for i in range(len(coefficients) - 1, -1, -1):
+                if round(coefficients[len(coefficients) - (i + 1)], 4) == 0:
+                    continue
+                equationX += f"{'+' if coefficients[len(coefficients) - (i + 1)] > 0 else '-'} {str(abs(round(coefficients[len(coefficients) - (i + 1)], 4))) + (f'x^{i}' if i > 1 else 'x' if i > 0 else '')} "
+            equationX = equationX[2:]
+        elif self.__list_return[5] == "expon":
+            equationX = f"{round(coefficients[0], 4)} * {round(coefficients[1], 4)}^x {f'+ {round(coefficients[2], 4)}' if round(coefficients[2], 4) > 0 else '' if round(coefficients[2], 4) == 0 else f'- {abs(round(coefficients[2], 4))}'}"
         equation += equationX
         return equation
 
-    def __set_list_return(self, r2, degree, coefficients, prediction):
+    def __set_list_return(self, r2, degree, coefficients, prediction, type):
         self.__list_return = (
             r2,
             degree,
             "st" if degree == 1 else "nd" if degree == 2 else "rd" if degree == 3 else "th",
             coefficients,
-            lambda x: prediction(x)
+            lambda x: prediction(x),
+            type
         )
 
     def visualization(self):
@@ -95,28 +100,39 @@ class Regression:
         degree = 0
         predict = ""
         coefficient = []
+        type = ""
         x = self.__x
         y = self.__y
-        for i in range(1, 31):
-
-            coefficients = np.polyfit(x, y, i)
-            prediction = np.poly1d(coefficients)
+        for i in range(31):
+            category = ""
+            coefficients = []
+            def prediction(x): return 0
+            if i == 0:
+                category = "expon"
+                coefficients = expon.regression(self.__x, self.__y)
+                def prediction(x): return expon.prediction(
+                    self.__x, self.__y, x)
+            else:
+                category = "polynomial"
+                coefficients = np.polyfit(x, y, i)
+                prediction = np.poly1d(coefficients)
 
             if r2_score(y, prediction(x)) - i >= 0.9:
                 self.__set_list_return(r2_score(y, prediction(x)),
-                                       i, coefficients, prediction)
+                                       i, coefficients, prediction, type)
 
-            if r2 < r2_score(y, prediction(x)) - (i / 30 if control else 0):
+            if r2 < r2_score(y, prediction(x)) - (i / 50 if control or i > 30 else 0):
                 r2 = r2_score(y, prediction(x))
                 degree = i
                 predict = prediction
                 coefficient = coefficients
+                type = category
 
-        self.__set_list_return(r2, degree, coefficient, predict)
+        self.__set_list_return(r2, degree, coefficient, predict, type)
 
     def best_degree_polynomial(self) -> str:
         """Returns the best degree of polynomial formatted as a string"""
-        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial"
+        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else f"The best regression model to describe the given sets' behaviour is the exponential"
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""
@@ -153,12 +169,12 @@ def regress(x: list[number], y: list[number]):
     """Returns an instance of the Regression Class"""
     return Regression(x, y)
 
+
 def regress(y: list[number]):
     """Returns an instance of the Regression Class"""
     x = list(range(1, len(y) + 1))
-    print(x)
     return Regression(x, y)
 
 
-regression = regress([1, 2, 3, 4, 5, 7])
+regression = regress([1, 2, 3, 4, 5, 6, 7, 8])
 regression.print_full_analysis()
