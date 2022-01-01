@@ -1,6 +1,8 @@
 import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
+import expon
+import log
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -18,9 +20,9 @@ class Regression:
             raise Exception("Invalid input for x or y")
         self.__x = np.array(x)
         self.__y = np.array(y)
-        self.__polynomial()
+        self.__regression()
         if not self.__list_return[1]:
-            self.__polynomial(control=True)
+            self.__regression(control=True)
 
     @property
     def x(self) -> list[number]:
@@ -38,15 +40,15 @@ class Regression:
 
     def get_degree(self) -> int:
         """Returns the polinomial degree of the regression"""
-        return self.__list_return[1]
+        return self.__list_return[1] if self.__list_return[5] == "polynomial" else f"{'An exponential' if self.__list_return[5] == 'expon' else 'A logarithmic'} model does not have a degree, since the function would be somewhat like {'y = a * b^x + c' if self.__list_return[5] == 'expon' else 'y = a * log(b + x) + c'}"
 
     def get_ordinal(self) -> str:
         """Returns the ordinal suffix of the regression degree"""
-        return self.__list_return[2]
+        return self.__list_return[2] if self.__list_return[5] == "polynomial" else f"{'An exponential' if self.__list_return[5] == 'expon' else 'A logarithmic'} model does not have a degree, since the function would be somewhat like {'y = a * b^x + c' if self.__list_return[5] == 'expon' else 'y = a * log(b + x) + c'}"
 
     def get_full_degree(self) -> str:
         """Returns the polinomial degree with the ordinal suffix of the regression"""
-        return str(self.get_degree()) + str(self.get_ordinal())
+        return str(self.get_degree()) + str(self.get_ordinal()) if self.__list_return[5] == "polynomial" else f"{'An exponential' if self.__list_return[5] == 'expon' else 'A logarithmic'} model does not have a degree, since the function would be somewhat like {'y = a * b^x + c' if self.__list_return[5] == 'expon' else 'y = a * log(b + x) + c'}"
 
     def get_coefficients(self) -> list[float]:
         """Returns the list of coefficients of the regression equation, 
@@ -62,22 +64,27 @@ class Regression:
         equation = "y = "
         equationX = ""
         coefficients = self.__list_return[3]
-        for i in range(len(coefficients) - 1, -1, -1):
-            if round(coefficients[len(coefficients) - (i + 1)], 4) == 0:
-                continue
-            equationX += f"{'+' if coefficients[len(coefficients) - (i + 1)] > 0 else '-'} {str(abs(round(coefficients[len(coefficients) - (i + 1)], 4))) + (f'x^{i}' if i > 1 else 'x' if i > 0 else '')} "
-
-        equationX = equationX[2:]
+        if self.__list_return[5] == "polynomial":
+            for i in range(len(coefficients) - 1, -1, -1):
+                if round(coefficients[len(coefficients) - (i + 1)], 4) == 0:
+                    continue
+                equationX += f"{'+' if coefficients[len(coefficients) - (i + 1)] > 0 else '-'} {str(abs(round(coefficients[len(coefficients) - (i + 1)], 4))) + (f'x^{i}' if i > 1 else 'x' if i > 0 else '')} "
+            equationX = equationX[2:]
+        elif self.__list_return[5] == "expon":
+            equationX = f"{round(coefficients[0], 4)} * {round(coefficients[1], 4)}^x"
+        elif self.__list_return[5] == "logarithm":
+            equationX = f"{round(coefficients[0], 4)} * log({round(coefficients[1], 4)} + x) {f'+ {round(coefficients[2], 4)}' if round(coefficients[2], 4) > 0 else '' if round(coefficients[2], 4) == 0 else f'- {abs(round(coefficients[2], 4))}'}"
         equation += equationX
         return equation
 
-    def __set_list_return(self, r2, degree, coefficients, prediction):
+    def __set_list_return(self, r2, degree, coefficients, prediction, type):
         self.__list_return = (
             r2,
             degree,
             "st" if degree == 1 else "nd" if degree == 2 else "rd" if degree == 3 else "th",
             coefficients,
-            lambda x: prediction(x)
+            lambda x: prediction(x),
+            type
         )
 
     def visualization(self):
@@ -89,34 +96,52 @@ class Regression:
         plt.plot(xp, self.__list_return[4](xp), c='r')
         plt.show()
 
-    def __polynomial(self, control=True):
+    def __regression(self, control=True):
         """Function thats calculates the best polynomial regression given the two datasets"""
         r2 = 0
         degree = 0
         predict = ""
         coefficient = []
+        type = ""
         x = self.__x
         y = self.__y
-        for i in range(1, 31):
+        for i in range(-1, 31):
+            category = ""
+            coefficients = []
+            prediction = lambda x: 0
+            if i == -1:
+                category = "expon"
+                coefficients = expon.regression(self.__x, self.__y)
 
-            coefficients = np.polyfit(x, y, i)
-            prediction = np.poly1d(coefficients)
+                prediction = lambda x: expon.prediction(
+                    self.__x, self.__y, x)
+                print(r2_score(y, prediction(x)))
+            elif i == 0:
+                category = "logarithm"
+                coefficients = log.regression(self.__x, self.__y)
+                prediction = lambda x: log.prediction(
+                    self.__x, self.__y, x)
+            else:
+                category = "polynomial"
+                coefficients = np.polyfit(x, y, i)
+                prediction = np.poly1d(coefficients)
 
-            if r2_score(y, prediction(x)) - i >= 0.9:
+            if r2_score(y, prediction(x)) - i >= 0.95:
                 self.__set_list_return(r2_score(y, prediction(x)),
-                                       i, coefficients, prediction)
+                                       i, coefficients, prediction, type)
 
-            if r2 < r2_score(y, prediction(x)) - (i / 30 if control else 0):
+            if r2 < r2_score(y, prediction(x)) - (i / 50 if control or i > 30 else 0):
                 r2 = r2_score(y, prediction(x))
                 degree = i
                 predict = prediction
                 coefficient = coefficients
+                type = category
 
-        self.__set_list_return(r2, degree, coefficient, predict)
+        self.__set_list_return(r2, degree, coefficient, predict, type)
 
-    def best_degree_polynomial(self) -> str:
+    def best_regression_model(self) -> str:
         """Returns the best degree of polynomial formatted as a string"""
-        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial"
+        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else f"The best regression model to describe the given sets' behaviour is the exponential" if self.__list_return[5] == "expon" else f"The best regression model to describe the given sets' behaviour is the logarithmic"
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""
@@ -136,7 +161,7 @@ class Regression:
 
     def full_text_analysis(self) -> str:
         """Returns the full text analysis"""
-        return self.best_degree_polynomial() + self.coefficient_of_determination() + self.__r2_interpretation() + self.equation_text()
+        return self.best_regression_model() + self.coefficient_of_determination() + self.__r2_interpretation() + self.equation_text()
 
     def full_analysis(self) -> str:
         """Returns the full analysis with all text and visualization"""
@@ -149,16 +174,8 @@ class Regression:
         self.visualization()
 
 
-def regress(x: list[number], y: list[number]):
+def regress(y: list[number], x: list[number] = None):
     """Returns an instance of the Regression Class"""
+    if x is None:
+        x = list(range(1, len(y) + 1))
     return Regression(x, y)
-
-def regress(y: list[number]):
-    """Returns an instance of the Regression Class"""
-    x = list(range(1, len(y) + 1))
-    print(x)
-    return Regression(x, y)
-
-
-regression = regress([1, 2, 3, 4, 5, 7])
-regression.print_full_analysis()

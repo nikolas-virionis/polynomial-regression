@@ -1,6 +1,6 @@
 ﻿# Polynomial Regression
 
-Python package that analyses the given datasets and comes up with the best polynomial regression representation with the smallest polynomial degree possible, to be the most reliable with the least complexity possible
+Python package that analyses the given datasets and comes up with the best regression representation with either the smallest polynomial degree possible, to be the most reliable without overfitting or other models such as exponentials and logarithms
 
 <img alt="python logo" src="https://miro.medium.com/max/1400/1*-1ttHqMEzjjXduNdtIBKjQ.png" width = "45%">
 
@@ -36,7 +36,9 @@ Firstly, it's necessary to import the method regress from the package polinomial
 
  First the one that relates two different metrics, it is necessary to pass two same sized lists of numbers
  ~~~ python
- regression = regress([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
+ regression = regress([2, 4, 6, 8, 10], [1, 2, 3, 4, 5])
+ # for it not to be reversed, the parameter 
+ # order should be y, x
  ~~~
 
  And also the one that monitors the overtime behaviour of a single metric, it is necessary to pass a number list
@@ -104,11 +106,12 @@ regression.visualization()
 # returns the a graphic plot of both a scatter plot of the 
 # real data and a line representing the regression calculated
 ~~~
- - best_degree_polynomial
+ - best_regression_model
 ~~~python
-regression.best_degree_polynomial()
+regression.best_regression_model()
 # returns the degree of the best fitting polynomial
-# inside a string to be displayed
+# if the best model is a polynomial or else the best fitting 
+# mathematical model inside a string to be displayed
 ~~~
  - coefficient_of_determination
 ~~~python
