@@ -32,7 +32,9 @@ Firstly, it's necessary to import the method regress from the package polinomial
  from polinomial_regression.main import regress
  ~~~
  
- Then, there are two ways of using this model: One which provides both the axis values, x and y, and the math is done, and the other which provides only the y axis, would be more fitting to a use case of overtime monitoring of a single metric, sleect the best option to use below:
+ Then, there are two ways of using this model: One which provides both the axis values, x and y, and the math is done, and the other which provides only the y axis, would be more fitting to a use case of overtime monitoring of a single metric, select the best option to use below:
+
+<strong> - Just as a quick note: the more data points provided, the more accurate the chosen regression model and it's equation are</strong>
 
  First the one that relates two different metrics, it is necessary to pass two same sized lists of numbers
  ~~~ python
