@@ -1,3 +1,4 @@
+import numpy as np
 from pylab import *
 from scipy.optimize import curve_fit
 import warnings
@@ -5,12 +6,12 @@ warnings.filterwarnings("ignore")
 
 
 def function(x, a, b, c):
-    return a * (b ** x) + c
+    return a * np.log10(b + x) + c
 
 
 def regression(x, y):
     try:
-        popt, pcov = curve_fit(function, x, y, p0=[1, 1e-6, 1])
+        popt, pcov = curve_fit(function, x, y)
     except Exception:
         return [0, 0, 0]
     return popt

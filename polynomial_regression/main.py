@@ -2,6 +2,7 @@ import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
 import expon
+import log
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -19,9 +20,9 @@ class Regression:
             raise Exception("Invalid input for x or y")
         self.__x = np.array(x)
         self.__y = np.array(y)
-        self.__polynomial()
+        self.__regression()
         if not self.__list_return[1]:
-            self.__polynomial(control=True)
+            self.__regression(control=True)
 
     @property
     def x(self) -> list[number]:
@@ -72,6 +73,8 @@ class Regression:
             equationX = equationX[2:]
         elif self.__list_return[5] == "expon":
             equationX = f"{round(coefficients[0], 4)} * {round(coefficients[1], 4)}^x {f'+ {round(coefficients[2], 4)}' if round(coefficients[2], 4) > 0 else '' if round(coefficients[2], 4) == 0 else f'- {abs(round(coefficients[2], 4))}'}"
+        elif self.__list_return[5] == "logarithm":
+            equationX = f"{round(coefficients[0], 4)} * ln2({round(coefficients[1], 4)} + x) {f'+ {round(coefficients[2], 4)}' if round(coefficients[2], 4) > 0 else '' if round(coefficients[2], 4) == 0 else f'- {abs(round(coefficients[2], 4))}'}"
         equation += equationX
         return equation
 
@@ -94,7 +97,7 @@ class Regression:
         plt.plot(xp, self.__list_return[4](xp), c='r')
         plt.show()
 
-    def __polynomial(self, control=True):
+    def __regression(self, control=True):
         """Function thats calculates the best polynomial regression given the two datasets"""
         r2 = 0
         degree = 0
@@ -103,21 +106,28 @@ class Regression:
         type = ""
         x = self.__x
         y = self.__y
-        for i in range(31):
+        for i in range(-1, 31):
             category = ""
             coefficients = []
-            def prediction(x): return 0
-            if i == 0:
+            prediction = lambda x: 0
+            if i == -1:
                 category = "expon"
                 coefficients = expon.regression(self.__x, self.__y)
-                def prediction(x): return expon.prediction(
+
+                prediction = lambda x: expon.prediction(
                     self.__x, self.__y, x)
+            elif i == 0:
+                category = "logarithm"
+                coefficients = log.regression(self.__x, self.__y)
+                prediction = lambda x: log.prediction(
+                    self.__x, self.__y, x)
+                print(category, r2_score(y, prediction(x)))
             else:
                 category = "polynomial"
                 coefficients = np.polyfit(x, y, i)
                 prediction = np.poly1d(coefficients)
 
-            if r2_score(y, prediction(x)) - i >= 0.9:
+            if r2_score(y, prediction(x)) - i >= 0.95:
                 self.__set_list_return(r2_score(y, prediction(x)),
                                        i, coefficients, prediction, type)
 
@@ -132,7 +142,7 @@ class Regression:
 
     def best_degree_polynomial(self) -> str:
         """Returns the best degree of polynomial formatted as a string"""
-        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else f"The best regression model to describe the given sets' behaviour is the exponential"
+        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else f"The best regression model to describe the given sets' behaviour is the exponential" if self.__list_return[5] == "expon" else f"The best regression model to describe the given sets' behaviour is the logarithmic"
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""
@@ -165,16 +175,8 @@ class Regression:
         self.visualization()
 
 
-def regress(x: list[number], y: list[number]):
+def regress(y: list[number], x: list[number] = None):
     """Returns an instance of the Regression Class"""
+    if x is None:
+        x = list(range(1, len(y) + 1))
     return Regression(x, y)
-
-
-def regress(y: list[number]):
-    """Returns an instance of the Regression Class"""
-    x = list(range(1, len(y) + 1))
-    return Regression(x, y)
-
-
-regression = regress([1, 2, 3, 4, 5, 6, 7, 8])
-regression.print_full_analysis()
