@@ -1,7 +1,7 @@
 import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
-import expon, log, sinusoidal, logistic
+import expon, log, sinusoidal, logistic, train_test
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -10,15 +10,17 @@ warnings.filterwarnings("ignore")
 class Regression:
     """The Class Regression tests if a set of data is fit in either a polynomial regression model, or others such as exponential or logarithmic and returns a variety of results regarding its calculations"""
     __list_return: list
+    __train_test: bool
 
-    def __init__(self, x: list[number], y: list[number]):
+    def __init__(self, x: list[number], y: list[number], train_test: bool = False):
         np.random.seed(2)
         if not len(x) == len(y):
             raise Exception("Invalid input for x or y")
         if not len(x) > 2 and len(y) > 2:
-            raise Exception("Invalid input for x or y")
+            raise Exception("Invalid input size for x or y")
         self.__x = np.array(x)
         self.__y = np.array(y)
+        self.__train_test = train_test
         self.__regression()
         if not self.__list_return[1]:
             self.__regression(control=True)
@@ -109,44 +111,52 @@ class Regression:
         predict = ""
         coefficient = []
         type = ""
-        x = self.__x
-        y = self.__y
+        train_x, test_x, train_y, test_y = train_test.split(self.__x, self.__y, self.__train_test)
         for i in range(-3, 32, 1):
             category = ""
             coefficients = []
             prediction = lambda x: 0
             if i == 0:
                 category = "expon"
-                coefficients = expon.regression(self.__x, self.__y)
+                coefficients = expon.regression(train_x, train_y)
 
                 prediction = lambda x: expon.prediction(
-                    self.__x, self.__y, x)
+                    train_x, train_y, x)
             elif i == -3:
                 category = "logarithm"
-                coefficients = log.regression(self.__x, self.__y)
+                coefficients = log.regression(train_x, train_y)
 
                 prediction = lambda x: log.prediction(
-                    self.__x, self.__y, x)
+                    train_x, train_y, x)
             elif i == 2:
                 category = "sinusoidal"
-                coefficients = sinusoidal.regression(self.__x, self.__y)
+                coefficients = sinusoidal.regression(train_x, train_y)
                 prediction = lambda x: sinusoidal.prediction(
-                    self.__x, self.__y, x)
+                    train_x, train_y, x)
             elif i == 1:
                 category = "logistic"
-                coefficients = logistic.regression(self.__x, self.__y)
+                coefficients = logistic.regression(train_x, train_y)
                 prediction = lambda x: logistic.prediction(
-                    self.__x, self.__y, x)
+                    train_x, train_y, x)
             elif i in range(-2, 0):
                 category = "polynomial"
-                coefficients = np.polyfit(x, y, i + 3)
+                coefficients = np.polyfit(train_x, train_y, i + 3)
                 prediction = np.poly1d(coefficients)
             else:
                 category = "polynomial"
-                coefficients = np.polyfit(x, y, i)
+                coefficients = np.polyfit(train_x, train_y, i)
                 prediction = np.poly1d(coefficients)
-            if round(r2, 4) < round(r2_score(y, prediction(x)), 4) - (i / 50 if control and i > 0 else 0):
-                r2 = r2_score(y, prediction(x))
+                
+            if round(r2_score(test_y, prediction(test_x)), 4) > 0.95:
+                r2 = r2_score(test_y, prediction(test_x))
+                degree = i if i not in range(-2, 0) else i + 3
+                predict = prediction
+                coefficient = coefficients
+                type = category
+                break
+
+            if round(r2, 4) < round(r2_score(test_y, prediction(test_x)), 4) - (i / 50 if control and i > 0 else 0):
+                r2 = r2_score(test_y, prediction(test_x))
                 degree = i if i not in range(-2, 0) else i + 3
                 predict = prediction
                 coefficient = coefficients
@@ -193,4 +203,4 @@ def regress(y: list[number], x: list[number] = None):
     """Returns an instance of the Regression Class"""
     if x is None:
         x = list(range(1, len(y) + 1))
-    return Regression(x, y)
+    return Regression(x, y, len(y) >= 15)
