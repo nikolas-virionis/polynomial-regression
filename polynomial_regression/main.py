@@ -1,9 +1,7 @@
 import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
-import expon
-import log
-import sinusoidal
+import expon, log, sinusoidal, logistic
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
@@ -40,7 +38,7 @@ class Regression:
         return self.__list_return[0]
 
     def not_polynomial_warn(self):
-        return f"{'An exponential' if self.__list_return[5] == 'expon' else 'A logarithmic'  if self.__list_return[5] == 'logarithm' else 'A sinusoidal'} model does not have a degree, since the function would be somewhat like {'y = a * b^x + c' if self.__list_return[5] == 'expon' else 'y = a * log(b + x) + c'  if self.__list_return[5] == 'logarithm' else 'y = a * sin(b * (x - c)) + d'}"
+        return f"{'An exponential' if self.__list_return[5] == 'expon' else 'A logarithmic'  if self.__list_return[5] == 'logarithm' else 'A sinusoidal' if self.__list_return[5] == 'sinusoidal' else 'A logistic'} model does not have a degree, since the function would be somewhat like {'y = a * b^x' if self.__list_return[5] == 'expon' else 'y = a * log(b + x) + c'  if self.__list_return[5] == 'logarithm' else 'y = a * sin(b * (x - c)) + d' if self.__list_return[5] == 'sinusoidal' else 'y = L / (1 + c * e^(-k*x))'}"
 
     def get_degree(self) -> int:
         """Returns the polinomial degree of the regression"""
@@ -79,6 +77,8 @@ class Regression:
             equationX = f"{f'{round(coefficients[0], 4)} * ' if round(coefficients[0], 4) != 1 else ''}log({round(coefficients[1], 4)} + x) {f'+ {round(coefficients[2], 4)}' if round(coefficients[2], 4) > 0 else '' if round(coefficients[2], 4) == 0 else f'- {abs(round(coefficients[2], 4))}'}"
         elif self.__list_return[5] == "sinusoidal":
             equationX = f"{f'{round(coefficients[0], 4)} * ' if round(coefficients[0], 4) != 1 else ''}sin({f'{round(coefficients[1], 4)} * ' if round(coefficients[1], 4) != 1 else ''} (x {f'- {np.radians(round(coefficients[2], 4))}' if round(coefficients[2], 4) > 0 else f'+ {round(np.radians(coefficients[2]), 4)}' if round(coefficients[2], 4) < 0 else ''})) {f'- {round(coefficients[3], 4)}' if round(coefficients[3], 4) < 0 else f'+ {round(coefficients[3], 4)}' if round(coefficients[3], 4) > 0 else ''}"
+        elif self.__list_return[5] == "logistic":
+            equationX = f"{round(coefficients[0], 4)} / (1 + {f'{round(coefficients[1], 4)} * ' if round(coefficients[1], 4) != 1 else ''} e^({f'{-1 * round(coefficients[2], 4)} * ' if round(coefficients[2], 4) != -1 else ''}x))"
         equation += equationX
         return equation
 
@@ -96,7 +96,7 @@ class Regression:
         """
         Plots both a scatter plot of the data and a line of the regression calculated
         """
-        xp = np.linspace(min(self.__x), max(self.__x),
+        xp = np.linspace(min(self.__x) - 3, max(self.__x) + 3,
                          (max(self.__x) - min(self.__x)) * 50)
         plt.scatter(self.__x, self.__y)
         plt.plot(xp, self.__list_return[4](xp), c='r')
@@ -111,43 +111,43 @@ class Regression:
         type = ""
         x = self.__x
         y = self.__y
-        for i in range(-2, 31):
+        for i in range(-3, 32, 1):
             category = ""
             coefficients = []
             prediction = lambda x: 0
-            if i == -2:
+            if i == 0:
                 category = "expon"
                 coefficients = expon.regression(self.__x, self.__y)
 
                 prediction = lambda x: expon.prediction(
                     self.__x, self.__y, x)
-            elif i == -1:
+            elif i == -3:
                 category = "logarithm"
                 coefficients = log.regression(self.__x, self.__y)
 
                 prediction = lambda x: log.prediction(
                     self.__x, self.__y, x)
-            elif i == 0:
+            elif i == 2:
                 category = "sinusoidal"
                 coefficients = sinusoidal.regression(self.__x, self.__y)
                 prediction = lambda x: sinusoidal.prediction(
                     self.__x, self.__y, x)
+            elif i == 1:
+                category = "logistic"
+                coefficients = logistic.regression(self.__x, self.__y)
+                prediction = lambda x: logistic.prediction(
+                    self.__x, self.__y, x)
+            elif i in range(-2, 0):
+                category = "polynomial"
+                coefficients = np.polyfit(x, y, i + 3)
+                prediction = np.poly1d(coefficients)
             else:
                 category = "polynomial"
                 coefficients = np.polyfit(x, y, i)
                 prediction = np.poly1d(coefficients)
-
-            # if r2_score(y, prediction(x)) >= 0.999:
-            #     r2 = r2_score(y, prediction(x))
-            #     degree = i
-            #     predict = prediction
-            #     coefficient = coefficients
-            #     type = category
-            #     break
-
-            if round(r2, 4) <= round(r2_score(y, prediction(x)), 4) - (i / 50 if control and i > 0 else 0):
+            if round(r2, 4) < round(r2_score(y, prediction(x)), 4) - (i / 50 if control and i > 0 else 0):
                 r2 = r2_score(y, prediction(x))
-                degree = i
+                degree = i if i not in range(-2, 0) else i + 3
                 predict = prediction
                 coefficient = coefficients
                 type = category
@@ -156,7 +156,7 @@ class Regression:
 
     def best_regression_model(self) -> str:
         """Returns the best degree of polynomial formatted as a string"""
-        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else "The best regression model to describe the given sets' behaviour is the exponential" if self.__list_return[5] == "expon" else "The best regression model to describe the given sets' behaviour is the logarithmic" if self.__list_return[5] == "logarithm" else "The best regression model to describe the given sets' behaviour is the sinusoidal"
+        return "\n " + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else "The best regression model to describe the given sets' behaviour is the exponential" if self.__list_return[5] == "expon" else "The best regression model to describe the given sets' behaviour is the logarithmic" if self.__list_return[5] == "logarithm" else "The best regression model to describe the given sets' behaviour is the sinusoidal" if self.__list_return[5] == "sinusoidal" else "The best regression model to describe the given sets' behaviour is the logistic"
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""

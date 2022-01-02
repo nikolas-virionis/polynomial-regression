@@ -5,22 +5,22 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def function(x, a, b, c, d):
-    """Function that represents the sinusoidal equation"""
-    return a * np.sin(b * (x - c))+d
+def function(x, L, c, k):
+    return L / (1 + c * np.exp(-k * x))
 
+def logifunc(x,L,x0,k,off):
+    return L / (1 + np.exp(-k*(x-x0)))+off
 
 def regression(x, y):
     """Function that returns the regression equation coefficients"""
     try:
-        popt, pcov = curve_fit(function, x, y)
+        popt, pcov = curve_fit(function, x, y, p0=[200, 1, 1])
     except Exception:
-        return [0, 0, 0, 0]
-
+        return [0, 0, 0]
     return popt
 
 
 def prediction(X, Y, x):
     """Function that returns the prediction made with the regressipon equation"""
-    a, b, c, d = regression(X, Y)
-    return function(x, a, b, c, d)
+    L, c, k = regression(X, Y)
+    return function(x, L, c, k)
