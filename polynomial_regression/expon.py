@@ -11,7 +11,10 @@ def function(x, a, b):
 
 def regression(x, y):
     """Function that returns the regression equation coefficients"""
-    popt, pcov = curve_fit(function, x, y, p0=[1, 0], maxfev=99999999)
+    try:
+        popt, pcov = curve_fit(function, x, y, p0=[1, 0])
+    except Exception:
+        return [0, 0]
     return popt
 
 
