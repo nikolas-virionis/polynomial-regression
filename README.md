@@ -156,7 +156,7 @@ regression.print_full_analysis()
 ~~~
 
 ## Results 
-    This package will return the best fitting model, trying its best to prevent overfitting, though it's good to clear out the possible outcomes:
+This package will return the best fitting model, trying its best to prevent overfitting, though it's good to clear out the possible outcomes:
 
 - Polynomials:
 The package was created to, at first, only analyse polynomial regression, and it still does, now from possible indexes 1 to 30, may not seem much but a 30 degree polynomial, unless really needed, may establish chaos, since it can kinda curve around to get all data points, but predictions may be as unreliable as it gets, despite the high r² score
