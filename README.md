@@ -154,6 +154,30 @@ regression.print_full_analysis()
 # prints the full text analysis and plots the
 # visualization charts
 ~~~
+### Correlation
+- correlation
+~~~ python
+ regression.correlation()
+ # returns the correlation between the datasets 
+~~~ 
+- correlation_way
+~~~ python
+ regression.correlation_way()
+ # returns the way the two datasets are correlated 
+ # to each other
+~~~ 
+- correlation_intensity
+~~~ python
+ regression.correlation_intensity()
+ # returns the intensity by which the two datasets 
+ # are correlated to each other
+~~~ 
+- correlation_interpretation
+~~~ python
+ regression.correlation_interpretation()
+ # returns the interpretation of the correlation index
+ # between the datasets 
+~~~ 
 
 ## Results 
 This package will return the best fitting model, trying its best to prevent overfitting, though it's good to clear out the possible outcomes:
