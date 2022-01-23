@@ -1,7 +1,7 @@
 import numpy as np
 from pylab import *
 from sklearn.metrics import r2_score
-import expon, log, sinusoidal, logistic, train_test
+from polynomial_regression import expon, log, sinusoidal, logistic, train_test
 import matplotlib.pyplot as plt
 import warnings
 
@@ -202,7 +202,7 @@ class Regression:
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""
-        return "\n " + f"It has a coefficient of determination of {self.get_r2():.4f}"
+        return "\n " + f"It has a coeffiprint(dircient of determination of {self.get_r2():.4f}"
 
     def __r2_interpretation(self) -> str:
         """Returns the coefficient of determination interpretation if needed"""
