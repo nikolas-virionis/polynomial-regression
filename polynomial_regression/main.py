@@ -14,7 +14,7 @@ class Regression:
     __list_return: list
     __train_test: bool
 
-    def __init__(self, x: list[number], y: list[number], train_test: bool = False):
+    def __init__(self, x: list, y: list, train_test: bool = False):
         np.random.seed(2)
         if not len(x) == len(y):
             raise Exception("Invalid input for x or y")
@@ -28,12 +28,12 @@ class Regression:
             self.__regression(control=True)
 
     @property
-    def x(self) -> list[number]:
+    def x(self) -> list:
         """Returns the list given in the x axis"""
         return self.__x.tolist()
 
     @property
-    def y(self) -> list[number]:
+    def y(self) -> list:
         """Returns the list given in the y axis"""
         return self.__y.tolist()
 
@@ -68,7 +68,7 @@ class Regression:
             else self.not_polynomial_warn()
         )
 
-    def get_coefficients(self) -> list[float]:
+    def get_coefficients(self) -> list:
         """Returns the list of coefficients of the regression equation,
         going from the greater index degree towards the linear coefficient"""
         return self.__list_return[3]
@@ -284,7 +284,7 @@ class Regression:
         self.visualization()
 
 
-def regress(y: list[number], x: list[number] = None):
+def regress(y: list, x: list = None):
     """Returns an instance of the Regression Class"""
     if x is None:
         x = list(range(1, len(y) + 1))
