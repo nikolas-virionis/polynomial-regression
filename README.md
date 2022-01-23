@@ -183,7 +183,7 @@ regression.print_full_analysis()
 This package will return the best fitting model, trying its best to prevent overfitting, though it's good to clear out the possible outcomes:
 
 - Polynomials:
-The package was created to, at first, only analyse polynomial regression, and it still does, now from possible indexes 1 to 30, may not seem much but a 30 degree polynomial, unless really needed, may establish chaos, since it can kinda curve around to get all data points, but predictions may be as unreliable as it gets, despite the high r² score
+The package was created to, at first, only analyse polynomial regression, and it still does, now from possible indexes 1 to 30, which may not seem much but a 30 degree polynomial, unless really needed, may establish chaos, since it can kinda curve around to get all data points, but predictions may be as unreliable as it gets, despite the high r² score
 
 - Exponentials:
 Although polynomials are quite versatile and can describe a lot of patterns, others, more specific, such as exponentials, can sometimes, due to luck, be perfectly described by some polynomial, but still, to get the most out of it, the specificity is needed
@@ -192,7 +192,7 @@ Although polynomials are quite versatile and can describe a lot of patterns, oth
 Just like exponentials, it can sometimes be described by some crazy polynomials, though it loses accuracy quickly
 
 - Sinusoidal:
-Unlike the previously mentioned, a senoide is not so easy to represent, consistently, bt polynomials, it always fits perfect to the data that you test the model with but then predictions go 100% wrong, then this specificity is more than necessary
+Unlike the previously mentioned, a senoide is not so easy to represent, consistently, by polynomials, it always fits perfect to the data that you test the model with but then predictions go 100% wrong, then this specificity is more than necessary
 
 - Logistic:
 Similarly to the previous, a logistic curve is not so easily represented by a polynomial and needs to have its own regression model in order to be better represented and be more reliable for predictions
