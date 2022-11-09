@@ -129,14 +129,6 @@ regression.equation_text()
 # returns the best fitting polynomial inside a string 
 # to be displayed
 ~~~
- - get_prediction
-~~~python
-regression.get_prediction()
-# returns the prediction of the y value correspondent to 
-# the x value informed according to the regression calculated
-# E.g. 794 in the case of the equation being y = 2x^4 + 3x³ + 4x² + 5x + 6 
-# (like the example above)
-~~~
  - full_text_analysis
 ~~~python
 regression.full_text_analysis()
