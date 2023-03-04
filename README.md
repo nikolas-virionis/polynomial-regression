@@ -1,22 +1,32 @@
 ﻿# Polynomial Regression
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/polynomial-regression-model?style=plastic)
+![PyPI](https://img.shields.io/pypi/v/polynomial-regression-model?style=plastic)
+![GitHub repo size](https://img.shields.io/github/repo-size/nikolas-virionis/polynomial-regression)
+![GitHub last commit](https://img.shields.io/github/last-commit/nikolas-virionis/polynomial-regression?style=plastic)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/polynomial-regression-model?style=plastic)<br>
 
 Python package that analyses the given datasets and comes up with the best regression representation with either the smallest polynomial degree possible, to be the most reliable without overfitting or other models such as exponentials and logarithms
 
 <img alt="python logo" src="https://miro.medium.com/max/1400/1*-1ttHqMEzjjXduNdtIBKjQ.png" width = "45%">
 
-- [Setup](#setup)
-- [Methods](#methods)
-- [Possible returns](#results)
-- [Contribution Rules](#contributing)
+- [Polynomial Regression](#polynomial-regression)
+  - [Setup](#setup)
+    - [Requirements:](#requirements)
+  - [Methods](#methods)
+    - [Correlation](#correlation)
+  - [Results](#results)
+- [Contributing](#contributing)
+  - [PR Template](#pr-template)
+  - [Commits](#commits)
 
-## Setup 
+## Setup
 
 ### Requirements:
   - Python installed<br>
  The ideal version, to run the package is 3.9.x, the version in which the package was built over,<br> however,
- older versions of python 3 shouldn't have any issues, as the package does not use any <br> 
+ older versions of python 3 shouldn't have any issues, as the package does not use any <br>
  fancy, new methods, not supported by older versions of Python 3.x
- 
+
   - Installing the package<br>
 
 For Microsoft Windows
@@ -33,7 +43,7 @@ Firstly, it's necessary to import the method regress from the package polinomial
  ~~~ python
  from polinomial_regression.main import regress
  ~~~
- 
+
  Then, there are two ways of using this model: One which provides both the axis values, x and y, and the math is done, and the other which provides only the y axis, would be more fitting to a use case of overtime monitoring of a single metric, select the best option to use below:
 
 <strong> - Just as a quick note: the more data points provided, the more accurate the chosen regression model and it's equation are</strong>
@@ -41,7 +51,7 @@ Firstly, it's necessary to import the method regress from the package polinomial
  First the one that relates two different metrics, it is necessary to pass two same sized lists of numbers
  ~~~ python
  regression = regress([2, 4, 6, 8, 10], [1, 2, 3, 4, 5])
- # for it not to be reversed, the parameter 
+ # for it not to be reversed, the parameter
  # order should be y, x
  ~~~
 
@@ -50,7 +60,7 @@ Firstly, it's necessary to import the method regress from the package polinomial
  regression = regress([1, 2, 3, 4, 5, 2, 4, 6, 8, 10])
  ~~~
 
- 
+
  After we already got our object instance, all there is left to do is enjoy the beauty of math
 ## Methods
  - get_degree
@@ -68,7 +78,7 @@ regression.get_ordinal()
  - get_full_degree
 ~~~python
 regression.get_full_degree()
-# returns the polynomial degree(index) of the best fitting function 
+# returns the polynomial degree(index) of the best fitting function
 # with its ordinal suffix
 # E.g. 4th in the case of the equation being a "4th" degree polynomial
 ~~~
@@ -76,7 +86,7 @@ regression.get_full_degree()
 ~~~python
 regression.get_coefficients()
 # returns a list of all the coefficients of the polynomial equation
-# E.g. [2, 3, 4, 5, 6] in case of the equation being 
+# E.g. [2, 3, 4, 5, 6] in case of the equation being
 # y = 2x^4 + 3x³ + 4x² + 5x + 6
 ~~~
  - get_r2
@@ -92,47 +102,47 @@ regression.get_r2()
  - get_prediction
 ~~~python
 regression.get_prediction(x: float)
-# returns the prediction of the y value correspondent to 
+# returns the prediction of the y value correspondent to
 # the x value informed according to the regression calculated
-# E.g. 794 in the case of the equation being y = 2x^4 + 3x³ + 4x² + 5x + 6 
+# E.g. 794 in the case of the equation being y = 2x^4 + 3x³ + 4x² + 5x + 6
 # (like the example above)
 ~~~
  - equation_string
 ~~~python
 regression.equation_string()
-# returns the polynomial equation calculated as a string 
+# returns the polynomial equation calculated as a string
 # to be better displayed if necessary
 # E.g. y = 2x^4 + 3x³ + 4x² + 5x + 6 in the case of the example above
 ~~~
  - visualization
 ~~~python
 regression.visualization()
-# returns the a graphic plot of both a scatter plot of the 
+# returns the a graphic plot of both a scatter plot of the
 # real data and a line representing the regression calculated
 ~~~
  - best_regression_model
 ~~~python
 regression.best_regression_model()
 # returns the degree of the best fitting polynomial
-# if the best model is a polynomial or else the best fitting 
+# if the best model is a polynomial or else the best fitting
 # mathematical model inside a string to be displayed
 ~~~
  - coefficient_of_determination
 ~~~python
 regression.coefficient_of_determination()
-# returns the coefficient of determination(R²) of the best 
+# returns the coefficient of determination(R²) of the best
 # fitting polynomial inside a string to be displayed
 ~~~
  - equation_text
 ~~~python
 regression.equation_text()
-# returns the best fitting polynomial inside a string 
+# returns the best fitting polynomial inside a string
 # to be displayed
 ~~~
  - full_text_analysis
 ~~~python
 regression.full_text_analysis()
-# returns the combination of the previous analysis, building 
+# returns the combination of the previous analysis, building
 # the full analysis as a text
 ~~~~~~
  - full_analysis
@@ -151,28 +161,28 @@ regression.print_full_analysis()
 - correlation
 ~~~ python
  regression.correlation()
- # returns the correlation between the datasets 
-~~~ 
+ # returns the correlation between the datasets
+~~~
 - correlation_way
 ~~~ python
  regression.correlation_way()
- # returns the way the two datasets are correlated 
+ # returns the way the two datasets are correlated
  # to each other
-~~~ 
+~~~
 - correlation_intensity
 ~~~ python
  regression.correlation_intensity()
- # returns the intensity by which the two datasets 
+ # returns the intensity by which the two datasets
  # are correlated to each other
-~~~ 
+~~~
 - correlation_interpretation
 ~~~ python
  regression.correlation_interpretation()
  # returns the interpretation of the correlation index
- # between the datasets 
-~~~ 
+ # between the datasets
+~~~
 
-## Results 
+## Results
 This package will return the best fitting model, trying its best to prevent overfitting, though it's good to clear out the possible outcomes:
 
 - Polynomials:
@@ -199,7 +209,7 @@ In order to better organize this contributions, it would be ideal that all PRs f
 ## PR Template
  WHAT: <br>
  A brief description of the improvements
- 
+
  WHY: <br>
 A explanation on why those changes were needed, necessary, or at least, why is was on the best interest of the package users
 
