@@ -7,6 +7,7 @@ Python package that analyses the given datasets and comes up with the best regre
 - [Setup](#setup)
 - [Methods](#methods)
 - [Possible returns](#results)
+- [Contribution Rules](#contributing)
 
 ## Setup 
 
@@ -128,14 +129,6 @@ regression.equation_text()
 # returns the best fitting polynomial inside a string 
 # to be displayed
 ~~~
- - get_prediction
-~~~python
-regression.get_prediction()
-# returns the prediction of the y value correspondent to 
-# the x value informed according to the regression calculated
-# E.g. 794 in the case of the equation being y = 2x^4 + 3x³ + 4x² + 5x + 6 
-# (like the example above)
-~~~
  - full_text_analysis
 ~~~python
 regression.full_text_analysis()
@@ -196,3 +189,23 @@ Unlike the previously mentioned, a senoide is not so easy to represent, consiste
 
 - Logistic:
 Similarly to the previous, a logistic curve is not so easily represented by a polynomial and needs to have its own regression model in order to be better represented and be more reliable for predictions
+
+
+# Contributing
+Well, since this is a really simple package, contributing is always welcome, just as much as creating issues experienced with the package
+
+In order to better organize this contributions, it would be ideal that all PRs follow the template:
+
+## PR Template
+ WHAT: <br>
+ A brief description of the improvements
+ 
+ WHY: <br>
+A explanation on why those changes were needed, necessary, or at least, why is was on the best interest of the package users
+
+CHANGES: <br>
+List of changes made, can be the name of the commits made, or a simple changes list
+
+## Commits
+Ideally the commits should make use of the convention of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) <br>
+Something i recommend is the usage of either the [Commitizen](https://github.com/commitizen/cz-cli) terminal extension or the [Commit Message Editor](https://marketplace.visualstudio.com/items?itemName=adam-bender.commit-message-editor) VSCode Extension
