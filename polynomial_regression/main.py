@@ -1,9 +1,9 @@
+import warnings
 import numpy as np
+import matplotlib.pyplot as plt
 from pylab import *
 from sklearn.metrics import r2_score
 from polynomial_regression import expon, log, sinusoidal, logistic, train_test
-import matplotlib.pyplot as plt
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -16,10 +16,10 @@ class Regression:
 
     def __init__(self, x: list, y: list, train_test: bool = False):
         np.random.seed(2)
-        if not len(x) == len(y):
-            raise Exception("Invalid input for x or y")
-        if not len(x) > 2 and len(y) > 2:
-            raise Exception("Invalid input size for x or y")
+        if len(x) != len(y):
+            raise ValueError("Invalid input for x or y")
+        if len(x) <= 2 and len(y) > 2:
+            raise ValueError("Invalid input size for x or y")
         self.__x = np.array(x)
         self.__y = np.array(y)
         self.__train_test = train_test
@@ -131,11 +131,11 @@ class Regression:
         degree = 0
         predict = ""
         coefficient = []
-        type = ""
+        regression_type = ""
         train_x, test_x, train_y, test_y = train_test.split(
             self.__x, self.__y, self.__train_test
         )
-        for i in range(-3, 32, 1):
+        for i in range(-3, 32):
             category = ""
             coefficients = []
             prediction = lambda x: 0
@@ -166,12 +166,12 @@ class Regression:
                 coefficients = np.polyfit(train_x, train_y, i)
                 prediction = np.poly1d(coefficients)
 
-            if round(r2_score(test_y, prediction(test_x)), 4) > 0.95:
+            if round(r2_score(test_y, prediction(test_x)), 4) == 1:
                 r2 = r2_score(test_y, prediction(test_x))
                 degree = i if i not in range(-2, 0) else i + 3
                 predict = prediction
                 coefficient = coefficients
-                type = category
+                regression_type = category
                 break
 
             if round(r2, 4) < round(r2_score(test_y, prediction(test_x)), 4) - (
@@ -181,50 +181,33 @@ class Regression:
                 degree = i if i not in range(-2, 0) else i + 3
                 predict = prediction
                 coefficient = coefficients
-                type = category
+                regression_type = category
 
-        self.__set_list_return(r2, degree, coefficient, predict, type)
+        self.__set_list_return(r2, degree, coefficient, predict, regression_type)
 
     def best_regression_model(self) -> str:
         """Returns the best degree of polynomial formatted as a string"""
-        return (
-            "\n "
-            + f"The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial"
-            if self.__list_return[5] == "polynomial"
-            else "The best regression model to describe the given sets' behaviour is the exponential"
-            if self.__list_return[5] == "expon"
-            else "The best regression model to describe the given sets' behaviour is the logarithmic"
-            if self.__list_return[5] == "logarithm"
-            else "The best regression model to describe the given sets' behaviour is the sinusoidal"
-            if self.__list_return[5] == "sinusoidal"
-            else "The best regression model to describe the given sets' behaviour is the logistic"
-        )
+        return f"\n The best polynomial to describe the given sets' behaviour is the {self.get_full_degree()} degree polynomial" if self.__list_return[5] == "polynomial" else f"The best regression model to describe the given sets' behaviour is the {'exponential' if self.__list_return[5] == 'expon' else self.__list_return[5]}"
+
+
 
     def coefficient_of_determination(self) -> str:
         """Returns the coefficient of determination (R²) formatted as a string"""
-        return "\n " + f"It has a coefficient of determination of {self.get_r2():.4f}"
+        return f"\n It has a coefficient of determination of {self.get_r2():.4f}"
 
     def __r2_interpretation(self) -> str:
         """Returns the coefficient of determination interpretation if needed"""
         if self.get_r2() < 0.45:
-            return (
-                "\n"
-                + f"This index being low, represents it is not possible to find any reliably predictable behaviour given the previous datasets, therefore the actual accuracy for the predictions will be low and highly dependent on chance"
-            )
+            return "\nThis index being low, represents it is not possible to find any reliably predictable behaviour given the previous datasets, therefore the actual accuracy for the predictions will be low and highly dependent on chance"
+
         if self.get_r2() < 0.6:
-            return (
-                "\n"
-                + f"This index represents the predictions will not have optimal accuracy when making predictions since the given datasets don't set up an ideal predictable behaviour"
-            )
+            return "\nThis index represents the predictions will not have optimal accuracy when making predictions since the given datasets don't set up an ideal predictable behaviour"
+
         return ""
 
     def equation_text(self) -> str:
         """Returns the polinomial equation formatted as a string"""
-        return (
-            "\n "
-            + f"The equation can be written as {self.equation_string()}"
-            + "\n and makes predictions via the get_prediction function\n"
-        )
+        return f"\nThe equation can be written as {self.equation_string()}\n and makes predictions via the get_prediction function\n"
 
     def correlation(self) -> float:
         """returns the correlation between the two datasets"""
@@ -236,10 +219,7 @@ class Regression:
         if self.correlation_intensity() == "nearly independent":
             return "negligible way"
 
-        if corr > 0:
-            return "positive way"
-
-        return "negative way"
+        return "positive way" if corr > 0 else "negative way"
 
     def correlation_intensity(self) -> str:
         """returns the intensity by which the two datasets are correlated to each other"""
@@ -253,10 +233,7 @@ class Regression:
         if abs(corr) > 0.5:
             return "moderately correlated"
 
-        if abs(corr) > 0.3:
-            return "barely correlated"
-
-        return "nearly independent"
+        return "barely correlated" if abs(corr) > 0.3 else "nearly independent"
 
     def correlation_interpretation(self) -> str:
         """returns the interpretation of the correlation index,
